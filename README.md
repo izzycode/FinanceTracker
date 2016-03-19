@@ -1,7 +1,0 @@
-**Finance Tracker**
-Small web app made on rails.
--Sign in users with devise
--Used bootstrap gem for styling
--Pulls up stock market info on a user search 
--Used AJAX for async search 
--User can track up to 10 stocks limit
