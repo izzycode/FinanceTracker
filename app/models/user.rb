@@ -2,7 +2,7 @@ class User < ActiveRecord::Base
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable and :omniauthable
   devise :database_authenticatable, :registerable,
-         :recoverable, :rememberable, :trackable, :validatable
+  :recoverable, :rememberable, :trackable, :validatable
   has_many :user_stocks
   has_many :stocks, through: :user_stocks
   has_many :friendships
@@ -27,7 +27,37 @@ class User < ActiveRecord::Base
     user_stocks.where(stock_id: stock.id).exists?
   end
 
+  def not_friends_with?(friend_id)
+    friendships.where(friend_id: friend_id).count < 1
+  end
 
+  def except_current_user(users)
+    users.reject { |user| user.id == self.id }
+  end
+
+  def self.search(param)
+    return user.non if param.blank?
+
+    param.strip!
+    param.downcase!
+    (first_name_matches(param) + last_name_matches(param) + email_matches_param(param)).uniq
+  end
+
+  def self.first_name_matches(param)
+    matches('first_name', param)
+  end
+
+  def self.last_name_matches(param)
+    matches('last_name', param)
+  end
+
+  def self.email_matches_param(param)
+    matches('email', param)
+  end
+
+  def self.matches(field_name, param)
+    where("lower(#{field_name}) like ?", "%#{param}%")
+  end
 
 
 
